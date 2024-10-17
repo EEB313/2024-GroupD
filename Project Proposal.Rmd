@@ -27,6 +27,8 @@ We will also use the data collected by Sheets et al. (2021) who conducted a stud
 
 # References 
 
+Berger, L., Speare, R., Hines, H., Martelli, G., Hyatt, A., McDonald, K., Skerratt, L., Olsen, V., Clarke, J., Gillespie, G., Mahony, M., Sheppard, N., Williams, C., & Tyler, M. (2004). Effect Of Season And Temperature On Mortality In Amphibians Due To Chytridiomycosis. Australian Veterinary Journal., 82(7), 434–439. https://doi.org/10.1111/j.1751-0813.2004.tb11137.x
+
 Farrer, R. A., Weinert, L. A., Bielby, J., Garner, T. W. J., Balloux, F., Clare, F., Bosch, J., 
   Cunningham, A. A., Weldon, C., du Preez, L. H., Anderson, L., Pond, S. L. K., Shahar-Golan, 
   R., Henk, D. A., & Fisher, M. C. (2011). Multiple emergences of genetically diverse 
