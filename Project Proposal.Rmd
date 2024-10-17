@@ -7,15 +7,17 @@ output: pdf_document
 
 # Hypothesis 
 
-Null hypothesis: Temperature increases by climate change will have no effect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
+Null hypothesis: Temperature increases by climate change will have no effect on *Batrachochytrium dendrobatidis* (*Bd*) prevalence on *Litoria wilcoxii*. 
 
-Alternative hypothesis: Temperature increases by climate change will have an effect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
+Alternative hypothesis: Temperature increases by climate change will have an effect on *Batrachochytrium dendrobatidis* (*Bd*) prevalence on *Litoria wilcoxii*. 
 
 If the null hypothesis is rejected, we will use a mathematical model to extrapolate the data according to future temperature changes and observe how the population of *Litoria wilcoxii* might be affected. 
 
 # Prediction
- Increased temperature from climate change will benefit Litoria wilcoxii abundance over time until a biological threshold is reached. 
-Previous research has shown that the parasite Batrachochytrium, in its stationary phase, thrives in colder temperatures of 13-15 degrees Celcius, with a rapid decline of density at around 26 degrees Celcius (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21 degrees Celcius (Stevenson et al., 2013).  Evidence shows that zoospore activity decreases as temperature increases, which correlates with reduced lethality (and infection?) of hosts (Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004).
+
+Increased temperature from climate change will benefit *Litoria wilcoxii* abundance over time until a biological threshold is reached. 
+
+Previous research has shown that the parasite Batrachochytrium, in its stationary phase, thrives in colder temperatures of 13-15 degrees Celcius, with a rapid decline of density at around 26°C (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21°C (Stevenson et al., 2013). Evidence shows that zoospore activity decreases as temperature increases, which correlates with reduced prevalence of *Bd* in hosts (Sapsford et al., 2013; Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004).
 
 
 # Data Sources 
@@ -27,7 +29,11 @@ We will also use the data collected by Sheets et al. (2021) who conducted a stud
 
 # References 
 
-Berger, L., Speare, R., Hines, H., Martelli, G., Hyatt, A., McDonald, K., Skerratt, L., Olsen, V., Clarke, J., Gillespie, G., Mahony, M., Sheppard, N., Williams, C., & Tyler, M. (2004). Effect Of Season And Temperature On Mortality In Amphibians Due To Chytridiomycosis. Australian Veterinary Journal., 82(7), 434–439. https://doi.org/10.1111/j.1751-0813.2004.tb11137.x
+Berger, L., Speare, R., Hines, H., Martelli, G., Hyatt, A., McDonald, K., Skerratt, L., Olsen,
+  V., Clarke, J., Gillespie, G., Mahony, M., Sheppard, N., Williams, C., & Tyler, M. (2004).
+  Effect Of Season And Temperature On Mortality In Amphibians Due To Chytridiomycosis.
+  *Australian Veterinary Journal, 82(7)*, 434–439.
+  https://doi.org/10.1111/j.1751-0813.2004.tb11137.x
 
 Farrer, R. A., Weinert, L. A., Bielby, J., Garner, T. W. J., Balloux, F., Clare, F., Bosch, J., 
   Cunningham, A. A., Weldon, C., du Preez, L. H., Anderson, L., Pond, S. L. K., Shahar-Golan, 
@@ -39,12 +45,19 @@ Farrer, R. A., Weinert, L. A., Bielby, J., Garner, T. W. J., Balloux, F., Clare,
 Kriger, K. M., & Hero, J.-M. (2007). Large-scale seasonal variation in the prevalence and 
   severity of chytridiomycosis. *Journal of Zoology (1987), 271(3)*, 352–359. 
   https://doi.org/10.1111/j.1469-7998.2006.00220.x
+  
+Sapsford, S. J., Alford, R. A., & Schwarzkopf, L. (2013). Elevation, Temperature, and Aquatic
+  Connectivity All Influence the Infection Dynamics of the Amphibian Chytrid Fungus in Adult
+  Frogs. *PloS One, 8(12)*, e82425–e82425. https://doi.org/10.1371/journal.pone.0082425
 
 Sheets, C. N., Schmidt, D. R., Hurtado, P. J., Byrne, A. Q., Rosenblum, E. B., 
   Richards-Zawacki, C. L., & Voyles, J. (2021). Thermal Performance Curves of Multiple Isolates 
   of Batrachochytrium dendrobatidis, a Lethal Pathogen of Amphibians. *Frontiers in Veterinary* 
   *Science, 8*, 687084–687084. https://doi.org/10.3389/fvets.2021.687084
 
-Stevenson, L. A., Alford, R. A., Bell, S. C., Roznik, E. A., Berger, L., & Pike, D. A. (2013). Variation in Thermal Performance of a Widespread Pathogen, the Amphibian Chytrid Fungus Batrachochytrium dendrobatidis. PLoS ONE, 8(9), e73830. https://doi.org/10.1371/journal.pone.0073830
+Stevenson, L. A., Alford, R. A., Bell, S. C., Roznik, E. A., Berger, L., & Pike, D. A. (2013).
+  Variation in Thermal Performance of a Widespread Pathogen, the Amphibian Chytrid Fungus
+  *Batrachochytrium dendrobatidis*. *PLoS ONE, 8(9)*, e73830.
+  https://doi.org/10.1371/journal.pone.0073830
 
   
