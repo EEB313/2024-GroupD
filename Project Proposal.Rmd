@@ -7,9 +7,11 @@ output: pdf_document
 
 # Hypothesis 
 
-Null hypothesis: Temperature increases by climate change will have no affect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
+Null hypothesis: Temperature increases by climate change will have no effect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
 
-Alternative hypothesis: Temperature increases by climate change will have an affect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
+Alternative hypothesis: Temperature increases by climate change will have an effect on *Batrachochytrium dendrobatidis* prevalence on *Litoria wilcoxii*. 
+
+If the null hypothesis is rejected, we will use a mathematical model to extrapolate the data according to future temperature changes and observe how the population of *Litoria wilcoxii* might be affected. 
 
 # Prediction
 
