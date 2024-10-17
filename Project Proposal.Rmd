@@ -7,8 +7,9 @@ output: pdf_document
 
 # Hypothesis 
 
+Null hypothesis: Change in temperature caused by climate change has no effect on the abundance (survival) of *Litoria wilcoxii* over time
 
-
+Alternative hypothesis: Change in temperature caused by climate change affects the abundance of *Litoria wilcoxii* over time
 
 # Prediction
 
