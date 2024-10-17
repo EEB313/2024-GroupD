@@ -1,45 +1,42 @@
 ---
 title: "Project Proposal"
+author: "Rachel Rodriguez, Rhio Ishida, and Alicia Magsano"
 date: "2024-10-15"
 output: pdf_document
 ---
 
+# Hypothesis 
 
 
 
 
+# Prediction
 
 
 
 
+# Data Sources 
+
+To test this hypothesis, we will be using the data collected by Kriger and Hero (2007) from their study on the seasonal variation of chytridiomycosis prevalence and severity in a single population of *Litoria wilcoxii* (stony creek frogs). In this study, they captured and sampled *L. wilcoxii* over 21 months in 6-week intervals within a 1 km area of the Nerang River in Queensland, Australia. During each of the 13 sampling sessions, they swabbed frogs for chytridiomycosis, recorded the air and water temperature at the site, and obtained rainfall data from a nearby weather station. The swabs were tested for *Batrachochytrium dendrobatidis* (*Bd*) presence using quantitative (real-time) polymerase chain reaction (qPCR) techniques which were used to determine the prevalence of *Bd* (divided the number of *Bd* positive frogs by the total number of frogs sampled that session) and the geometric mean number of zoospores (parasite load) of infected frogs. Additionally, they determined the air and water temperature of each session by calculating the mean air temperature and total amount of rain in the 30 days leading up to the sampling day. Finally, since the water temperature was manually sampled at the beginning and end of each sampling session, the mean of these two measurements was used as the water temperature of a given sampling session. Therefore, using the zoospores and 30-day air temperature (°C) data from this study, we can generate a thermal performance curve for *L. wilcoxii's* susceptibility to chytridiomycosis. We can then parameterize a SIR model to determine how different temperatures affect the abundance of *L. wilcoxii*. 
+
+We will also use the data collected by Sheets et al. (2021) who conducted a study to determine how temperature affects different *Bd* isolates. In this study, Sheets et al. (2021) specifically tested isolates from the *Bd* lineage Global Panzootic Lineage (*Bd*GPL) which is hypervirulent (Farrer et al., 2011). Additionally, isolates from *Bd*GPL have been found in Australia (Farrer et al., 2011). This means it is possible for the host species we are using (*L. wilcoxii*) to contract isolates from this lineage. In their study, Sheets et al. (2021) collected 5 different *Bd* isolates from amphibians around the United States which they genotyped using an amplicon sequencing approach. They then tested how temperature affected different traits of each isolate including viability, zoospore densities, growth rates, and carrying capacities by incubating the isolates at different temperatures (4, 12, 17, 21, 25, 26, and 27 °C). Using this information, they generated thermal performance curves for each genotype and isolate. Therefore, by using the temperature and zoospore density (the average number of zoospores counted from samples using a hemocytometer) data from the Temp and Counts columns, we can also create thermal performance curves for each *Bd*GPL genotype. We can then incorporate this into our SIR model to determine how temperature's effect both the host (*L. wilcoxii*) and different pathogen genotypes (*Bd*GPL) can influence the abundance of *L. wilcoxii*. 
 
 
+# References 
 
+Farrer, R. A., Weinert, L. A., Bielby, J., Garner, T. W. J., Balloux, F., Clare, F., Bosch, J., 
+  Cunningham, A. A., Weldon, C., du Preez, L. H., Anderson, L., Pond, S. L. K., Shahar-Golan, 
+  R., Henk, D. A., & Fisher, M. C. (2011). Multiple emergences of genetically diverse 
+  amphibian-infecting chytrids include a globalized hypervirulent recombinant lineage. 
+  *Proceedings of the National Academy of Sciences, 108(46)*, 18732–18736. 
+  https://doi.org/10.1073/pnas.1111915108
 
+Kriger, K. M., & Hero, J.-M. (2007). Large-scale seasonal variation in the prevalence and 
+  severity of chytridiomycosis. *Journal of Zoology (1987), 271(3)*, 352–359. 
+  https://doi.org/10.1111/j.1469-7998.2006.00220.x
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Sheets, C. N., Schmidt, D. R., Hurtado, P. J., Byrne, A. Q., Rosenblum, E. B., 
+  Richards-Zawacki, C. L., & Voyles, J. (2021). Thermal Performance Curves of Multiple Isolates 
+  of Batrachochytrium dendrobatidis, a Lethal Pathogen of Amphibians. *Frontiers in Veterinary* 
+  *Science, 8*, 687084–687084. https://doi.org/10.3389/fvets.2021.687084
+  
