@@ -1,6 +1,6 @@
 ---
 title: "Project Proposal"
-author: "Rachel Rodriguez, Rhio Ishida, and Alicia Magsano"
+author: "Rachel Rodriguez, Riho Ishida, and Alicia Magsano"
 date: "2024-10-15"
 output: pdf_document
 ---
