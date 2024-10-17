@@ -14,8 +14,8 @@ Alternative hypothesis: Temperature increases by climate change will have an eff
 If the null hypothesis is rejected, we will use a mathematical model to extrapolate the data according to future temperature changes and observe how the population of *Litoria wilcoxii* might be affected. 
 
 # Prediction
-
-
+ Increased temperature from climate change will benefit Litoria wilcoxii abundance over time until a biological threshold is reached. 
+Previous research has shown that the parasite Batrachochytrium, in its stationary phase, thrives in colder temperatures of 13-15 degrees Celcius, with a rapid decline of density at around 26 degrees Celcius (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21 degrees Celcius (Stevenson et al., 2013).  Evidence shows that zoospore activity decreases as temperature increases, which correlates with reduced lethality (and infection?) of hosts (Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004).
 
 
 # Data Sources 
@@ -42,4 +42,7 @@ Sheets, C. N., Schmidt, D. R., Hurtado, P. J., Byrne, A. Q., Rosenblum, E. B.,
   Richards-Zawacki, C. L., & Voyles, J. (2021). Thermal Performance Curves of Multiple Isolates 
   of Batrachochytrium dendrobatidis, a Lethal Pathogen of Amphibians. *Frontiers in Veterinary* 
   *Science, 8*, 687084–687084. https://doi.org/10.3389/fvets.2021.687084
+
+Stevenson, L. A., Alford, R. A., Bell, S. C., Roznik, E. A., Berger, L., & Pike, D. A. (2013). Variation in Thermal Performance of a Widespread Pathogen, the Amphibian Chytrid Fungus Batrachochytrium dendrobatidis. PLoS ONE, 8(9), e73830. https://doi.org/10.1371/journal.pone.0073830
+
   
