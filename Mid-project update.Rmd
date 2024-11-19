@@ -1,0 +1,12 @@
+---
+title: "Mid-project update"
+output: pdf_document
+date: "2024-11-19"
+---
+
+#A detailed description of the question you want to answer, any previous work (modelling and otherwise), the model you have built to answer this question, and your modelling assumptions.
+
+#Detailed descriptions of the model analysis and biological interpretations of the results so far. 
+
+
+#Your analysis plan (a paragraph): describe additional analysis that you will do and any assumptions you would like to relax.
