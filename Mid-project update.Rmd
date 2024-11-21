@@ -43,6 +43,29 @@ Additionally, we used the data collected by Sheets et al. (2021) who conducted a
 
 ## TPC
 
+```{r}
+data <- read.csv("Combined Chytrid Data.csv") 
+
+# Max Temperature in the combined dataset
+max(data$Temperature)
+data$Zoospores <- as.integer(data$Zoospores)
+
+# Plot of the combined zoospore and temperature data
+plot(data$Temperature,data$Zoospores, 
+     main = "Change in Zoospore Count Over Different Temperatures", 
+     xlab = "Temperature (°C)",
+     ylab = "Number of Zoospores")
+
+# Distribution of zoospore count in the combined dataset 
+hist(data$Zoospores, main = "Distribution of Zoospore Count", 
+     xlab = "Number of Zoospores")
+```
+
+Since our data had so much variance we used a negative binomial distribution to construct the TPC. 
+
+```{r}
+
+```
 
 
 ## Mathematical Model
