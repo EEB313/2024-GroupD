@@ -15,14 +15,13 @@ library(tidyverse)
 
 Given how severe the effects of *Bd* are it is important to understand what factors can help to limit the effects of this deadly pathogen. Temperature may be one such factor as previous research has shown that *Bd*, in its stationary phase, thrives in colder temperatures of 13-15°C, with a rapid decline of density at around 26°C (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21°C (Stevenson et al., 2013). Furthermore, there is evidence that *Bd* zoospore activity decreases as temperature increases, which correlates with a reduced prevalence of *Bd* in hosts (Sapsford et al., 2013; Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004). Therefore, given that *Bd* favours cooler temperatures, it is important to understand how changes in temperature due to climate change may affect *Bd* because this can help us better understand how to facilitate future conservation efforts for amphibians. 
 
-Other studies have used modelling to determine the distribution of *Bd* in a certain location or to predict how *Bd*'s range may shift as a result of climate change (Sun et al., 2023; Tytar et al., 2023). However, there are not any studies on how the change in temperature due to climate change may change the dynamics of *Bd* and how it spreads within a population. 
+Other studies have used modelling to determine the distribution of *Bd* in a certain location or to predict how *Bd*'s range may shift as a result of climate change (Sun et al., 2023; Tytar et al., 2023). However, there are no studies on how the change in temperature due to climate change may change the dynamics of *Bd* and how it influences susceptible amphibian populations.
 
 # Our Question and Prediction
 
-Question: How will changes in temperature due to climate change affect the spread of *Bd* within a population of frogs? 
-- Specifically, how will the number of zoospores and the number of infected/susceptible individuals change over time given there is a change in the environmental temperature? 
+Question: How will changes in temperature due to climate change affect the probability that a population of frogs suffering from *Bd* infections will go extinct? 
 
-Prediction: Since *Bd* favours cooler temperatures, we predict that over time at higher temperatures there will be fewer zoospores and thus fewer infected individuals within the population. 
+Prediction: Since *Bd* favours cooler temperatures, we predict that at higher temperatures there will be a lower probability that a frog population infected with *Bd* will go extinct. 
 
 # Analysis Plan
 
@@ -149,10 +148,10 @@ Profile of log-likelihoods for each parameter
 data.frame(combinations, LL) %>% 
   subset(A == MLE$A & w == MLE$w &  size == MLE$size) %>% 
   subset(is.finite(LL)) %>% ggplot(aes(x = Topt, y = LL)) + geom_point() +
-  labs(title = "Topt", y = "log-likelihood", colour = "Legend") +
+  labs(title = "Topt", y = "log-likelihood") +
   geom_vline(xintercept = MLE$Topt, color = "red") +
   geom_vline(xintercept = 13.2, color = "red", linetype = "dashed") +
-  geom_vline(xintercept = 17.2, color = "red", linetype = "dashed") 
+  geom_vline(xintercept = 17.2, color = "red", linetype = "dashed")
 
 # For  A
 data.frame(combinations, LL) %>% 
@@ -185,15 +184,70 @@ data.frame(combinations, LL) %>%
 
 ## Mathematical Model
 
+We created a stage-structured SIR model including differential equations for zoospores, susceptible and infected tadpoles, and susceptible and infected frogs.
 
+**Zoospores**
+$$\frac{d Z}{d t} = -d_z Z + p_f I_f Z + p_t I_t Z$$
 
-## Assumptions and Limitations
+**Susceptible/Infected Tadpoles**
+$$\frac{d S_t}{d t} = b S_t - \beta_t S_t I_t - \beta_f S_t I_f - \beta_z S_t Z - m_S S_t - d_{St} S_t + r_t I_t$$
 
+$$\frac{d I_t}{d t} = \beta_t S_t I_t + \beta_f S_t I_f + \beta_z S_t Z - d_{It} I_t - v_t I_t - m_I I_t - r_t I_t$$
 
+**Susceptible/Infected Frogs**
+$$\frac{d S_f}{d t} = m_S S_t - \beta_t S_f I_t - \beta_f S_f I_f - \beta_z S_f Z - d_{Sf} S_f + r_f I_f$$
+
+$$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f Z - d_{If} I_f - v_f I_f - r_f I_f$$
+
+**List of Variables**
+- Z = number of zoospores
+- $S_t$ = number of susceptible tadpoles
+- $I_t$ = number of infected tadpoles 
+- $S_f$ = number of susceptible frogs
+- $I_f$ = number of infected frogs
+- $p_f$ = production rate of zoospores from infected frogs
+- $p_t$ = production rate of zoospores from infected tadpoles
+- $m_S$ = maturation rate of susceptible tadpoles
+- $m_I$ = maturation rate of infected tadpoles
+- b = birth rate of tadpoles
+- $r_t$ = recovery rate of tadpoles
+- $r_f$ = recovery rate of frogs
+- $v_t$ = virulence in tadpoles (death rate caused by the disease)
+- $v_f$ = virulence in frogs (death rate caused by the disease)
+- $\beta_f$ = rate of infection from frogs
+- $\beta_t$ = rate of infection from tadpoles
+- $\beta_z$ = rate of infection from environmental zoospores 
+- $d_z$ = death rate of zoospores 
+- $d_{St}$ = death rate of susceptible tadpoles
+- $d_{It}$ = death rate of infected tadpoles 
+- $d_{Sf}$ = death rate of susceptible frogs
+- $d_{If}$ = death rate of infected frogs 
+
+## Assumptions of the Model
+
+- Homogeneous mixing of the population, in other words, all infected and susceptible specimens have an equal chance of interaction (Tolles & Luong, 2020). This may not account for ecological barriers or behavioral changes induced by infection. 
+
+- The chance of zoospore infection is equal for all zoospores, which is unrealistic in the real world. The possibility of infection will depend on random chance, the isolate, as well as the geographic location of the zoospores.
+
+- There is no vertical inheritance of the disease. This assumption is in line with observations from field studies (Infection with *Batrachochytrium Dendrobatidis (Bd)*, 2020).
+
+- There’s no emigration or immigration in the population.
+
+- Individuals that recovery from the disease do not have immunity and thus can be infected again. 
+
+- The parameters used in our model are estimates. For example, we assume the maturation rate for infected and susceptible tadpoles (moving from St to Sf, or It to If) is different because the trade-off between growth and defense will lead infected individuals to allocate more resources to fighting the infection and grow slower (Rauw, 2012).
+
+## Limitations of the Model 
+
+- Our model uses an initial number of zoospores from our TPC. The TPC is created using data based on *L. wilcoxii*/*L. lesueuri*, which are reservoir species, and isolates of *Bd* found in the US. This was an attempt to make a generalized estimate of the number of zoospores for any *Bd* isolate in *L. wilcoxii*/*L. lesueuri*. However, the model cannot account for any other frog species; thus, infection via zoospore spread between species other than *L. wilcoxii*/*L. lesueuri* cannot be modeled. Additionally, each frog species plays a unique role in the disease dynamics. For example, there are differences in zoospore shedding rate and resilience between such species (Lips, 2016).
+
+- Studies have pointed out that moisture influences Bd survival (Lips, 2016; Raffel et al., 2015). We only built a TPC, which does not reflect other factors that affect Bd survival in the real world.
+
+- Our model does not account for the epidemic spread of Bd that expends across different communities and even countries. This can occur naturally or with influence from human activities (i.e., trade) (Infection with *Batrachochytrium Dendrobatidis (Bd)*, 2020; Lips, 2016). 
 
 ## Remaining Plan 
 
-
+The next step we will be to determine the values of the rate parameters in our model and to translate our deterministic model into a stochastic one. Then we can use our TPC to determine a series of initial zoospore (Z0) counts over a sequence of temperature values which we will use to solve our mathematical model. Based on our predictions, we expect to see that with rising temperatures due to climate change there is a lower prevelence of *Bd* within a population of frogs thus reducing the probability of extinction caused by *Bd* for that population. 
 
 # References 
 
@@ -208,6 +262,11 @@ Bradley, P. W., Brawner, M. D., Raffel, T. R., Rohr, J. R., Olson, D. H., Blaust
   amphibian larvae. *PloS One, 14*(9), e0222237–e0222237. 
   https://doi.org/10.1371/journal.pone.0222237
 
+*Infection with Batrachochytrium dendrobatidis (Bd)*. (2020). Australia Government, Department 
+  of Agriculture, Water and the Environment. 
+  https://www.agriculture.gov.au/sites/default/files/documents/infection-batrachochytrium-dendr
+  obatidis.pdf
+
 Kriger, K. M., & Hero, J. M. (2007). Large-scale seasonal variation in the prevalence and 
   severity of chytridiomycosis. *Journal of Zoology (1987), 271*(3), 352–359. 
   https://doi.org/10.1111/j.1469-7998.2006.00220.x
@@ -216,9 +275,21 @@ Kriger, K. M., Pereoglou, F., & Hero, J. M. (2007). Latitudinal Variation in the
   Intensity of Chytrid (Batrachochytrium dendrobatidis) Infection in Eastern Australia. 
   *Conservation Biology, 21*(5), 1280–1290. https://doi.org/10.1111/j.1523-1739.2007.00777.x
   
+Lips, K. R. (2016). Overview of chytrid emergence and impacts on amphibians. *Philosophical* 
+  *Transactions of the Royal Society of London. Series B. Biological Sciences, 371*(1709), 
+  20150465-. https://doi.org/10.1098/rstb.2015.0465
+  
 Piotrowski, J. S., Annis, S. L., & Longcore, J. E. (2004). Physiology of Batrachochytrium 
   dendrobatidis, a chytrid pathogen of amphibians. *Mycologia, 96*(1), 9–15. 
   https://doi.org/10.1080/15572536.2005.11832990
+  
+Raffel, T. R., Halstead, N. T., McMahon, T. A., Davis, A. K., & Rohr, J. R. (2015). Temperature
+  variability and moisture synergistically interact to exacerbate an epizootic disease. 
+  *Proceedings of the Royal Society. B, Biological Sciences, 282*(1801), 20142039–20142039. 
+  https://doi.org/10.1098/rspb.2014.2039
+  
+Rauw, W. M. (2012). Immune response from a resource allocation perspective. *Frontiers in 
+  Genetics, 3*, 267–267. https://doi.org/10.3389/fgene.2012.00267
   
 Retallick, R. W. R., McCallum, H., Speare, R., & Georgina M. Mace. (2004). Endemic infection of
   the amphibian chytrid fungus in a frog community post-decline. *PLoS Biology, 2*(11), 
@@ -253,6 +324,10 @@ Stevenson, L. A., Alford, R. A., Bell, S. C., Roznik, E. A., Berger, L., & Pike,
 Sun, D., Ellepola, G., Herath, J., & Meegaskumbura, M. (2023). The two chytrid pathogens of 
   amphibians in Eurasia—climatic niches and future expansion. *BMC Ecology and Evolution,* 
   *23*(1), 26–26. https://doi.org/10.1186/s12862-023-02132-y
+  
+Tolles, J., & Luong, T. (2020). Modeling Epidemics With Compartmental Models. *JAMA: The 
+  Journal of the American Medical Association, 323*(24), 2515–2516. 
+  https://doi.org/10.1001/jama.2020.8420
 
 Tytar, V., Nekrasova, O., Pupins, M., Skute, A., Kirjušina, M., Gravele, E., Mezaraupe, L., 
   Marushchak, O., Čeirāns, A., Kozynenko, I., & Kulikova, A. A. (2023). Modeling the 
