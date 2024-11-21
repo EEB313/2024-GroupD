@@ -11,16 +11,16 @@ library(tidyverse)
 
 # Previous Work/Information
 
-*Batrachochytrium dendrobatidis* (*Bd*) is a fungal pathogen that causes chytridiomycosis which is a disease that is lethal to a large number of amphibian species (Scheele et al., 2019). Chytridiomycosis has had detrimental effects on amphibian species as it has caused global declines and extinctions in a number of susceptible species (Scheele et al., 2019; Skerratt et al., 2007). As a result, the declines caused by *Bd* have been called, "the greatest recorded loss of biodiversity attributable to a disease" (Scheele et al., 2019). 
+*Batrachochytrium dendrobatidis* (*Bd*) is a fungal pathogen that causes chytridiomycosis which is a disease that is lethal to a large number of amphibian species (Scheele et al., 2019). Chytridiomycosis has had detrimental effects on amphibian species as it has caused global declines and extinctions in many susceptible species (Scheele et al., 2019; Skerratt et al., 2007). As a result, the declines caused by *Bd* have been called, "the greatest recorded loss of biodiversity attributable to a disease" (Scheele et al., 2019). 
 
-Given how sever the effects of *Bd* are it is important to understand what factors can help to limit the effects of this deadly pathogen. Temperature may be one such factor as previous research has shown that *Bd*, in its stationary phase, thrives in colder temperatures of 13-15°C, with a rapid decline of density at around 26°C (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21°C (Stevenson et al., 2013). Furthermore, there is evidence that *Bd* zoospore activity decreases as temperature increases, which correlates with a reduced prevalence of *Bd* in hosts (Sapsford et al., 2013; Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004). Therefore, given that *Bd* favours cooler temperatures, it is important to understanding how changes in temperature due to climate change may affect *Bd* because this can help us better understand how to facilitate future conservation efforts for amphibians. 
+Given how severe the effects of *Bd* are it is important to understand what factors can help to limit the effects of this deadly pathogen. Temperature may be one such factor as previous research has shown that *Bd*, in its stationary phase, thrives in colder temperatures of 13-15°C, with a rapid decline of density at around 26°C (Stevenson et al., 2013). The same study demonstrated that the parasite grows best at around 21°C (Stevenson et al., 2013). Furthermore, there is evidence that *Bd* zoospore activity decreases as temperature increases, which correlates with a reduced prevalence of *Bd* in hosts (Sapsford et al., 2013; Stevenson et al., 2013). In vivo experiments support this, as reduced mortality is seen in subjects receiving higher temperatures for treatment (Berger et al., 2004). Therefore, given that *Bd* favours cooler temperatures, it is important to understand how changes in temperature due to climate change may affect *Bd* because this can help us better understand how to facilitate future conservation efforts for amphibians. 
 
-Other studies have used modeling to determine the distribution of *Bd* in a certain location or to predict how *Bd*'s range may shift as a result of climate change (Sun et al., 2023; Tytar et al., 2023). However, there are not any studies on how the change in temperature due to climate change may change the dynamics of *Bd* and how it spreads within a population. 
+Other studies have used modelling to determine the distribution of *Bd* in a certain location or to predict how *Bd*'s range may shift as a result of climate change (Sun et al., 2023; Tytar et al., 2023). However, there are not any studies on how the change in temperature due to climate change may change the dynamics of *Bd* and how it spreads within a population. 
 
 # Our Question and Prediction
 
-Question: How will changes in temperature due to climate change affect the spread of *Bd* within a population of frogs. 
-- Specifically, how will the number of zoospores and the number of infected/susceptible individuals change over time given there is a change in the environmental temperature. 
+Question: How will changes in temperature due to climate change affect the spread of *Bd* within a population of frogs? 
+- Specifically, how will the number of zoospores and the number of infected/susceptible individuals change over time given there is a change in the environmental temperature? 
 
 Prediction: Since *Bd* favours cooler temperatures, we predict that over time at higher temperatures there will be fewer zoospores and thus fewer infected individuals within the population. 
 
@@ -45,7 +45,7 @@ Additionally, we used the data collected by Sheets et al. (2021) who conducted a
 
 
 
-## Mathimatical Model
+## Mathematical Model
 
 
 
