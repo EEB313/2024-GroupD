@@ -103,7 +103,7 @@ colnames(LL) <- c("LL")
 MLE <- data.frame(combinations, LL) %>% subset(LL == max(LL)) 
 MLE
 ```
-Therefore, given the TPC the optimum temperature for *Bd* zoospores is 15°C. This thermal optimum is slightly lower than the thermal optimum that is generally associated with *Bd* which is 17-25°C (Bradley et al., 2019; Piotrowski et al., 2004). This difference might be a result of the specific data we used to generate the TPC. First, the frog species tested in the field studies are reservoir host for chytridiomycosis meaning they can survive with a higher prevalence of the disease compared to more susceptible species (Retallick et al., 2004). Furthermore, the lab data we included comes from different isolates of *Bd* and there is evidence to suggest that different isolates of *Bd* have different thermal optimum (Voyles et al., 2017). Therefore, including the data obtained from different isolates could have also influenced the optimum temperature we obtained. 
+Therefore, given the TPC the optimum temperature for *Bd* zoospores is 15°C. This thermal optimum is slightly lower than the thermal optimum that is generally associated with *Bd* which is 17-25°C (Bradley et al., 2019; Piotrowski et al., 2004). This difference might be a result of the specific data we used to generate the TPC. First, the frog species tested in the field studies are reservoir hosts for chytridiomycosis meaning they can survive with a higher prevalence of the disease compared to more susceptible species (Retallick et al., 2004). Furthermore, the lab data we included comes from different isolates of *Bd* and there is evidence to suggest that different isolates of *Bd* have different thermal optimum (Voyles et al., 2017). Therefore, including the data obtained from different isolates could have also influenced the optimum temperature we obtained. 
 
 ```{r}
 # TPC over the data
@@ -225,7 +225,7 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 ## Assumptions of the Model
 
-- Homogeneous mixing of the population, in other words, all infected and susceptible specimens have an equal chance of interaction (Tolles & Luong, 2020). This may not account for ecological barriers or behavioral changes induced by infection. 
+- Homogeneous mixing of the population, in other words, all infected and susceptible specimens have an equal chance of interaction (Tolles & Luong, 2020). This may not account for ecological barriers or behavioural changes induced by infection. 
 
 - The chance of zoospore infection is equal for all zoospores, which is unrealistic in the real world. The possibility of infection will depend on random chance, the isolate, as well as the geographic location of the zoospores.
 
@@ -233,13 +233,13 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 - There’s no emigration or immigration in the population.
 
-- Individuals that recovery from the disease do not have immunity and thus can be infected again. 
+- Individuals who recover from the disease do not have immunity and thus can be infected again. 
 
-- The parameters used in our model are estimates. For example, we assume the maturation rate for infected and susceptible tadpoles (moving from St to Sf, or It to If) is different because the trade-off between growth and defense will lead infected individuals to allocate more resources to fighting the infection and grow slower (Rauw, 2012).
+- The parameters used in our model are estimates. For example, we assume the maturation rate for infected and susceptible tadpoles (moving from St to Sf, or It to If) is different because the trade-off between growth and defence will lead infected individuals to allocate more resources to fighting the infection and grow slower (Rauw, 2012).
 
 ## Limitations of the Model 
 
-- Our model uses an initial number of zoospores from our TPC. The TPC is created using data based on *L. wilcoxii*/*L. lesueuri*, which are reservoir species, and isolates of *Bd* found in the US. This was an attempt to make a generalized estimate of the number of zoospores for any *Bd* isolate in *L. wilcoxii*/*L. lesueuri*. However, the model cannot account for any other frog species; thus, infection via zoospore spread between species other than *L. wilcoxii*/*L. lesueuri* cannot be modeled. Additionally, each frog species plays a unique role in the disease dynamics. For example, there are differences in zoospore shedding rate and resilience between such species (Lips, 2016).
+- Our model uses an initial number of zoospores from our TPC. The TPC is created using data based on *L. wilcoxii*/*L. lesueuri*, which are reservoir species, and isolates of *Bd* found in the US. This was an attempt to make a generalized estimate of the number of zoospores for any *Bd* isolate in *L. wilcoxii*/*L. lesueuri*. However, the model cannot account for any other frog species; thus, infection via zoospore spread between species other than *L. wilcoxii*/*L. lesueuri* cannot be modelled. Additionally, each frog species plays a unique role in the disease dynamics. For example, there are differences in zoospore shedding rate and resilience between such species (Lips, 2016).
 
 - Studies have pointed out that moisture influences Bd survival (Lips, 2016; Raffel et al., 2015). We only built a TPC, which does not reflect other factors that affect Bd survival in the real world.
 
@@ -247,7 +247,7 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 ## Remaining Plan 
 
-The next step we will be to determine the values of the rate parameters in our model and to translate our deterministic model into a stochastic one. Then we can use our TPC to determine a series of initial zoospore (Z0) counts over a sequence of temperature values which we will use to solve our mathematical model. Based on our predictions, we expect to see that with rising temperatures due to climate change there is a lower prevelence of *Bd* within a population of frogs thus reducing the probability of extinction caused by *Bd* for that population. 
+The next step we will be to determine the values of the rate parameters in our model and to translate our deterministic model into a stochastic one. Then we can use our TPC to determine a series of initial zoospore (Z0) counts over a sequence of temperature values which we will use to solve our mathematical model. Based on our predictions, we expect to see that with rising temperatures due to climate change, there is a lower prevalence of *Bd* within a population of frogs thus reducing the probability of extinction caused by *Bd* for that population. 
 
 # References 
 
