@@ -25,7 +25,7 @@ Prediction: Since *Bd* favours cooler temperatures, we predict that at higher te
 
 # Analysis Plan
 
-We planned to create a thermal performance curve (TPC) from data containing zoospore count and temperature to answer this question. Then we would make a stage-structured SIR model for a frog population which we would solve for at different temperatures by using the TPC we created to indicate the initial number of zoospores present at a given temperature. 
+To answer this question we created a thermal performance curve (TPC) from data containing zoospore count and temperature. Then we made a stage-structured SIR model for a frog population which we will solve for at different temperatures by using the TPC we created to indicate the initial number of zoospores present at a given temperature. 
 
 ## Data Used
 
@@ -35,7 +35,7 @@ The data we used to make the TPC was created by combining the data for three dif
 We used the data collected by Kriger and Hero (2007) from their study on the seasonal variation of chytridiomycosis prevalence and severity in a single population of *Litoria wilcoxii* (eastern stony creek frogs). In this study, they captured and sampled *L. wilcoxii* over 21 months in 6-week intervals within a 1 km area of the Nerang River in Queensland, Australia. During each of the 13 sampling sessions, they swabbed frogs for chytridiomycosis, recorded the air and water temperature at the site, and obtained rainfall data from a nearby weather station. The swabs were tested for *Bd* presence using quantitative polymerase chain reaction (qPCR) techniques which were used to determine the prevalence of *Bd* (divided the number of *Bd* positive frogs by the total number of frogs sampled that session) and the geometric mean number of zoospores (parasite load) found in infected frogs. Additionally, they determined each session's air and water temperature by calculating the mean air temperature and total amount of rain in the 30 days leading up to the sampling day. Finally, since the water temperature was manually sampled at the beginning and end of each sampling session, the mean of these two measurements was used as the water temperature for a given sampling session. Therefore, we used the zoospores and 30-day air temperature (°C) data from this study. 
 
 2. Second Field Study (Kriger et al., 2007)
-We also used the data collected by Kriger et al. (2007) whose study focused on how the prevalence and intensity of *Bd* is affected by latitudinal variation. In this study, they captured and swabbed *Litoria lesueuri* (stony creek frogs) for *Bd* infection at 31 sites along the east coast of Australia which encompassed a gradient of latitudes and the sampling from each site was done within a 42-day period (20 September 2005 – 1 November 2005). The swabs collected at each site were tested for *Bd* presence and quantity using qPCR. Furthermore, in addition to recording the latitude, longitude, and elevation at each sampling site, Kriger et al. (2007) also recorded different short and long-term climatic conditions. From the climatic conditions recorded, we were interested in the mean temperature of the warmest quarter (MTWQ). Therefore, we used the zoospores per frog (mean number of zoospores of all frogs sampled at a site) and MTWQ (°C) data from this study. 
+We also used the data collected by Kriger et al. (2007) whose study focused on how the prevalence and intensity of *Bd* is affected by latitudinal variation. In this study, they captured and swabbed *Litoria lesueuri* (stony creek frogs) for *Bd* at 31 sites along the east coast of Australia which encompassed a gradient of latitudes and the sampling from each site was done within 42 days (20 September 2005 – 1 November 2005). The swabs collected at each site were tested for *Bd* presence and quantity using qPCR. Furthermore, in addition to recording the latitude, longitude, and elevation at each sampling site, Kriger et al. (2007) also recorded different short and long-term climatic conditions. From the climatic conditions recorded, we were interested in the mean temperature of the warmest quarter (MTWQ). Therefore, we used the zoospores per frog (mean number of zoospores of all frogs sampled at a site) and MTWQ (°C) data from this study. 
 
 3. Lab Study (Sheets et al., 2021)
 Additionally, we used the data collected by Sheets et al. (2021) who conducted a study to determine how temperature affects different *Bd* isolates. In this study, Sheets et al. (2021) specifically tested isolates from the *Bd* lineage Global Panzootic Lineage (*Bd*GPL) which is hypervirulent (Farrer et al., 2011). In their study, Sheets et al. (2021) collected 5 different *Bd* isolates from amphibians around the United States which they genotyped using an amplicon sequencing approach. They then tested how temperature affected different traits of each isolate including viability, zoospore density, growth rate, and carrying capacity by incubating the isolates at various temperatures (4, 12, 17, 21, 25, 26, and 27 °C). Using this information, they generated thermal performance curves for each genotype and isolate. Therefore, we used the temperature and zoospore count (calculated as the average number of zoospores counted from two sides of a hemocytometer) data from the Temp and Counts columns. However, since the zoospore count was recorded over multiple days for each isolate and temperature combination we only included the highest number of zoospores for each isolate and temperature combination in our combined dataset. We decided to do this because before the highest number of zoospores was reached the number of zoospores was still able to grow and after the highest number was reached the number of zoospores likely began to decline due to not being able to persist in the lab setting anymore. 
@@ -75,7 +75,7 @@ LL_eval <- function(data, A, Topt, w, size){
 LL_eval(data, A = 10, Topt = 15, w = 1, size = 1)
 ```
 
-The parameters of our TPC that we want to find the maximum likelihood estimate include:
+The parameters of our TPC that we want to find the maximum likelihood estimate for include:
 - A: the average max number of zoospores that can be produced at the Topt.
 - Topt: the optimum temperature for *Bd* zoospores.
 - w: the width around the thermal optimum.
@@ -99,11 +99,12 @@ for (i in 1:nrow(combinations)){
 
 LL <- as.data.frame(do.call(rbind, LL))
 colnames(LL) <- c("LL")
+
 # The maximum likelihood estimate of each parameter
 MLE <- data.frame(combinations, LL) %>% subset(LL == max(LL)) 
 MLE
 ```
-Therefore, given the TPC the optimum temperature for *Bd* zoospores is 15°C. This thermal optimum is slightly lower than the thermal optimum that is generally associated with *Bd* which is 17-25°C (Bradley et al., 2019; Piotrowski et al., 2004). This difference might be a result of the specific data we used to generate the TPC. First, the frog species tested in the field studies are reservoir hosts for chytridiomycosis meaning they can survive with a higher prevalence of the disease compared to more susceptible species (Retallick et al., 2004). Furthermore, the lab data we included comes from different isolates of *Bd* and there is evidence to suggest that different isolates of *Bd* have different thermal optimum (Voyles et al., 2017). Therefore, including the data obtained from different isolates could have also influenced the optimum temperature we obtained. 
+Therefore, given the TPC the optimum temperature for *Bd* zoospores is 15°C. This thermal optimum is slightly lower than the thermal optimum generally associated with *Bd* which is 17-25°C (Bradley et al., 2019; Piotrowski et al., 2004). This difference might be a result of the specific data we used to generate the TPC. First, the frog species tested in the field studies are reservoir hosts for chytridiomycosis meaning they can survive with a higher prevalence of the disease compared to more susceptible species (Retallick et al., 2004). Furthermore, the lab data we included comes from different isolates of *Bd* and there is evidence to suggest that different isolates of *Bd* have different thermal optimum (Voyles et al., 2017). Therefore, including the data obtained from different isolates could have also influenced the optimum temperature we obtained. 
 
 ```{r}
 # TPC over the data
@@ -225,7 +226,8 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 ## Assumptions of the Model
 
-- Homogeneous mixing of the population, in other words, all infected and susceptible specimens have an equal chance of interaction (Tolles & Luong, 2020). This may not account for ecological barriers or behavioural changes induced by infection. 
+We assume:
+- There is a homogeneous mixing of the population, in other words, all infected and susceptible specimens have an equal chance of interaction (Tolles & Luong, 2020). This may not account for ecological barriers or behavioural changes induced by infection. 
 
 - The chance of zoospore infection is equal for all zoospores, which is unrealistic in the real world. The possibility of infection will depend on random chance, the isolate, as well as the geographic location of the zoospores.
 
@@ -233,13 +235,13 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 - There’s no emigration or immigration in the population.
 
-- Individuals who recover from the disease do not have immunity and thus can be infected again. 
+- Individuals who recover from the disease do not have immunity and thus can be reinfected. 
 
-- The parameters used in our model are estimates. For example, we assume the maturation rate for infected and susceptible tadpoles (moving from St to Sf, or It to If) is different because the trade-off between growth and defence will lead infected individuals to allocate more resources to fighting the infection and grow slower (Rauw, 2012).
+- The parameters used in our model are estimates. For example, we assume the maturation rate for infected and susceptible tadpoles (moving from $S_t$ to $S_f$, or $I_t$ to $I_f$) is different because the trade-off between growth and defence will lead infected individuals to allocate more resources to fighting the infection and thus grow slower (Rauw, 2012).
 
 ## Limitations of the Model 
 
-- Our model uses an initial number of zoospores from our TPC. The TPC is created using data based on *L. wilcoxii*/*L. lesueuri*, which are reservoir species, and isolates of *Bd* found in the US. This was an attempt to make a generalized estimate of the number of zoospores for any *Bd* isolate in *L. wilcoxii*/*L. lesueuri*. However, the model cannot account for any other frog species; thus, infection via zoospore spread between species other than *L. wilcoxii*/*L. lesueuri* cannot be modelled. Additionally, each frog species plays a unique role in the disease dynamics. For example, there are differences in zoospore shedding rate and resilience between such species (Lips, 2016).
+- Our model uses an initial number of zoospores from our TPC. The TPC is created using data based on *L. wilcoxii*/*L. lesueuri*, which are reservoir species, and isolates of *Bd* found in the US. This was an attempt to make a generalized estimate of the number of zoospores for any *Bd* isolate from the *Bd*GPL lineage in *L. wilcoxii*/*L. lesueuri*. Therefore, the initial number of zoospores used in our model is based solely on these species and thus cannot account for any other frog species. Additionally, each frog species plays a unique role in the disease dynamics. For example, there are differences in zoospore shedding rate and resilience between such species (Lips, 2016).
 
 - Studies have pointed out that moisture influences Bd survival (Lips, 2016; Raffel et al., 2015). We only built a TPC, which does not reflect other factors that affect Bd survival in the real world.
 
@@ -247,7 +249,7 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 ## Remaining Plan 
 
-The next step we will be to determine the values of the rate parameters in our model and to translate our deterministic model into a stochastic one. Then we can use our TPC to determine a series of initial zoospore (Z0) counts over a sequence of temperature values which we will use to solve our mathematical model. Based on our predictions, we expect to see that with rising temperatures due to climate change, there is a lower prevalence of *Bd* within a population of frogs thus reducing the probability of extinction caused by *Bd* for that population. 
+The next step is to determine the values of the rate parameters in our model and to translate our deterministic model into a stochastic one. Then we can use our TPC to determine a series of initial zoospore counts (Z0) over a sequence of temperature values which we will use to solve our mathematical model. Based on our predictions, we expect to see that with rising temperatures due to climate change, there is a lower prevalence of *Bd* within a population of frogs thus reducing the probability of extinction caused by *Bd* for that population. 
 
 # References 
 
