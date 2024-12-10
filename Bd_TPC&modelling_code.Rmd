@@ -445,8 +445,21 @@ We can visualize these simulations by graphing the population size over time. Th
 ```{r}
 nsims_to_use <- 100
 
-# INSERT CODE FOR THE GRAPH IN FIGURE 2 
-# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+
+sims |>
+  ggplot(aes(x = time, group = replicate)) + 
+  geom_step(aes(y = St + It + Sf + If, color = "Total population")) + 
+  geom_line(aes(y = It + If, color = "Infected population"), alpha = 0.25) +
+  facet_wrap(~temperature) +
+  labs(title="Temperature's effect on frog population infected with Bd", 
+       y = "Population size", 
+       x = "Days", 
+       color = "Legend") +
+  xlim(c(0, max_time_to_use)) +
+  scale_color_manual(values = c("Total population" = "grey", "Infected population" = "red")) +
+  theme(axis.title = element_text(size = 11),
+        aspect.ratio = 4/5, legend.position = "bottom") 
+
 ```
 
 ### Analysis of Simulation Results 
@@ -456,15 +469,34 @@ To analyse the results of our simulations we will look at:
 1. The distribution of frog population sizes after 1 year
 
 ```{r}
-# INSERT CODE FOR THE GRAPH IN FIGURE 3 
-# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+sims |>
+  group_by(replicate, temperature) |>
+  mutate(max_time = case_when(time == max(time) ~ time)) |>
+  subset(time == max_time) |>
+  ggplot(aes(x = St+It+Sf+If)) + 
+  geom_histogram(aes(y = ..count..)) + 
+  facet_wrap(~temperature) +
+  labs(title= "Distribution of frog population sizes after one year",
+       y = "Number of realizations",
+       x = "Population size after one year") + 
+ theme(axis.title = element_text(size = 11))
 ```
 
 2. The relationship between the initial number of zoospores and the final population size
 
 ```{r}
-# INSERT CODE FOR THE GRAPH IN FIGURE 4 
-# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+sims |>
+  group_by(replicate, temperature) |>
+  mutate(max_time = case_when(time == max(time) ~ time)) |>
+  subset(time == max_time) |>
+  ggplot(aes(x = Zinitial, y = St+It+Sf+If)) + 
+  geom_point() + 
+  facet_wrap(~temperature, scales = "free") +
+  labs(title="Initial number of zoospores' effect on final population size", 
+       y = "Population size after one year",
+       x = "Initial number of zoospores") +
+ theme(axis.title = element_text(size = 11),
+        aspect.ratio = 4/5)
 ```
 
 3. The fraction of populations that went extinct after 1 year
