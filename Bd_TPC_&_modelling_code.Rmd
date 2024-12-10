@@ -1,0 +1,490 @@
+---
+title: "Bd TPC and Modelling Code"
+author: "Rachel Rodriguez, Riho Ishida, and Alicia Magsano"
+output: pdf_document
+---
+
+```{r, Setup}
+library(tidyverse)
+```
+
+
+# Bd Zoospore Thermal Performance Curve (TPC)
+
+```{r}
+# Bring in the combined data  
+data <- read.csv("combined_chytrid_data.csv") 
+
+head(data)
+```
+
+This dataset was manually constructed and includes the temperature (°C) and Bd zoospore count data from 3 different studies. Using this data, we can construct a TPC for Bd zoospores.
+
+## Visualizing the Data
+
+Visualizing the data can help us determine the best distribution to use when fitting the TPC to our data. 
+
+```{r}
+# This ensures all the count data is read as an integer 
+data$Zoospores <- as.integer(data$Zoospores)
+
+# Plot of the combined zoospore and temperature data
+plot(data$Temperature,data$Zoospores, 
+     main = "Change in Zoospore Count Across Different Temperatures", 
+     xlab = "Temperature (°C)",
+     ylab = "Number of Zoospores")
+
+# Distribution of zoospore count in the combined dataset 
+hist(data$Zoospores, main = "Distribution of Zoospore Count", 
+     xlab = "Number of Zoospores")
+```
+
+Even though Normal or t-distributed errors are often assumed when fitting TPCs, since our zoospore count data is quite variable we can use a negative binomial distribution to account for our over dispersion around the mean. 
+
+## Finding Bd's Thermal Optimum
+
+With our distribution chosen, we can create an equation for the TPC which would be used as the mean parameter for the negative binomial distribution. This equation is $Ae^{\frac{-(temperature - Topt)^2}{2w^2}}$ and it includes 3 parameters (A, Topt, w). Therefore, in total, there are 4 parameters for our TPC including:
+- A: the average max number of zoospores that can be produced at the Topt.
+- Topt: the optimum temperature for Bd zoospores.
+- w: the width around the thermal optimum.
+- size: the dispersion coefficient
+
+We want to find the value of each parameter that is most likely to give rise to our data thus we can create a function that evaluates the log-likelihood of our data given specific values for each parameter. 
+
+```{r}
+# This function will evaluating the log-likelihood of all observations in our dataset
+LL_eval <- function(data, A, Topt, w, size){
+  
+  mean <- round(A*exp(-(data$Temperature-Topt)^2/(2*w^2)))
+  
+ return(sum(dnbinom(x = data$Zoospores, size = size, mu = mean, log = T)))
+  
+}
+
+# Quick test to see that the function works 
+LL_eval(data, A = 10, Topt = 15, w = 1, size = 1)
+```
+
+In order to determine the value of each parameter that is the mostly likely to give rise to our data, we can create a dataframe that consists of a range of values for each parameter and all possible combinations of those values. 
+
+```{r}
+# Parameters to test 
+combinations <- expand.grid(A = seq(1000,5000,100), 
+                            Topt = seq(10,20,0.1), 
+                            w = seq(4, 8, 0.1),
+                            size = seq(0.01, 0.75, 0.05))
+```
+
+Then by looping over each row in this dataframe and applying the log-likelihood function we created, we will be able to test combinations of these parameters to find a maximum likelihood estimate for our TPC.
+
+```{r}
+# This loop will identify the parameters that are the most likely to describe our data
+LL <- NULL
+
+for (i in 1:nrow(combinations)){
+  LL[[i]] <- LL_eval(data, A = combinations$A[i], 
+                     Topt = combinations$Topt[i], 
+                     w = combinations$w[i],
+                     size = combinations$size[i])
+}
+
+# We can make the log-likelihood results into a dataframe for easy access 
+LL <- as.data.frame(do.call(rbind, LL))
+colnames(LL) <- c("LL")
+```
+
+Now we can combine these log-likelihood values with the `combinations` dataframe to determine which combination of parameters has the highest log-likelihood value. Therefore, we will be finding the maximum likelihood estimate of the parameters. 
+
+```{r}
+# This vector provides the maximum likelihood estimate of each parameter
+MLE <- data.frame(combinations, LL) %>% subset(LL == max(LL)) 
+MLE
+```
+
+As a result, the Topt that best describes our data is 15. Therefore, given this combined data, Bd's thermal optimum is 15°C. 
+
+### Extra Analysis 
+
+We can also do some extra analysis in regards to the TPC including:
+
+1. Finding the confidence interval for each parameter
+
+```{r}
+# For Topt
+CI_Topt <- data.frame(combinations, LL) %>% 
+  subset(A == MLE$A & w == MLE$w &  size == MLE$size) %>% 
+  subset(abs(LL - MLE$LL) < qchisq(0.95, df=1)/2) %>% 
+  summarise(upperCI_Topt = max(Topt), lowerCI_Topt = min(Topt))
+
+CI_Topt
+
+# For A
+CI_A <- data.frame(combinations, LL) %>% 
+  subset(Topt == MLE$Topt & w == MLE$w &  size == MLE$size) %>% 
+  subset(abs(LL - MLE$LL) < qchisq(0.95, df=1)/2) %>% 
+  summarise(upperCI_A = max(A), lowerCI_A = min(A))
+
+CI_A
+
+# For w
+CI_w <- data.frame(combinations, LL) %>% 
+  subset(Topt == MLE$Topt & A == MLE$A &  size == MLE$size) %>% 
+  subset(abs(LL - MLE$LL) < qchisq(0.95, df=1)/2) %>% 
+  summarise(upperCI_w = max(w), lowerCI_w = min(w))
+
+CI_w
+
+# For size
+CI_size <- data.frame(combinations, LL) %>% 
+  subset(Topt == MLE$Topt & A == MLE$A &  w == MLE$w) %>% 
+  subset(abs(LL - MLE$LL) < qchisq(0.95, df=1)/2) %>% 
+  summarise(upperCI_size = max(size), lowerCI_size = min(size))
+
+CI_size
+```
+
+2. Profiling the log-likelihoods for each parameter
+
+```{r}
+# For Topt
+data.frame(combinations, LL) %>% 
+  subset(A == MLE$A & w == MLE$w &  size == MLE$size) %>% 
+  subset(is.finite(LL)) %>% ggplot(aes(x = Topt, y = LL)) + geom_point() +
+  labs(title = "Topt", y = "log-likelihood") +
+  geom_vline(xintercept = MLE$Topt, color = "red") +
+  geom_vline(xintercept = CI_Topt$lowerCI_Topt, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = CI_Topt$upperCI_Topt, color = "red", linetype = "dashed")
+
+# For A
+data.frame(combinations, LL) %>% 
+  subset(Topt == MLE$Topt & w == MLE$w & size == MLE$size) %>%
+  subset(is.finite(LL)) %>% ggplot(aes(x = A, y = LL)) + geom_point() +
+  labs(title = "Average Max Number of Zoospores Produced at the Topt", 
+        y = "log-likelihood") +
+  geom_vline(xintercept = MLE$A, color = "red") +
+  geom_vline(xintercept = CI_A$lowerCI_A, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = CI_A$upperCI_A, color = "red", linetype = "dashed")
+
+# For w
+data.frame(combinations, LL) %>% 
+  subset(A == MLE$A & Topt == MLE$Topt &  size == MLE$size) %>%
+  subset(is.finite(LL)) %>% ggplot(aes(x = w, y = LL)) + geom_point() +
+  labs(title = "Width Around the Thermal Optimum", y = "log-likelihood") +
+  geom_vline(xintercept = MLE$w, color = "red") +
+  geom_vline(xintercept = CI_w$lowerCI_w, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = CI_w$upperCI_w, color = "red", linetype = "dashed")
+
+# For size
+data.frame(combinations, LL) %>%
+  subset(A == MLE$A & Topt == MLE$Topt &  w == MLE$w) %>% 
+  subset(is.finite(LL)) %>% ggplot(aes(x = size, y = LL)) + geom_point() +
+  labs(title = "Dispersion Coefficient", y = "log-likelihood") +
+  geom_vline(xintercept = MLE$size, color = "red") +
+  geom_vline(xintercept = CI_size$lowerCI_size, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = CI_size$upperCI_size, color = "red", linetype = "dashed")
+```
+
+## Visulazing the TPC
+
+Finally, we can plot the TPC we constructed over our combined data.
+
+```{r}
+# The red line shows the TPC
+# The green lines show the confidence interval for the parameter A 
+# The grey box shows the confidence interval for Topt
+
+temperature <- seq(0, 30, length = 100)
+plot(temperature, CI_A$lowerCI_A*exp(-(temperature-MLE$Topt)^2/(2*MLE$w^2)), type = "l", 
+     ylim = c(0,max(data$Zoospores)), main = "TPC for Bd Zoospores", 
+     xlab = "Temperature (°C)", ylab = "Number of Zoospores", col = "darkgreen", lty = "dashed",
+     panel.first = rect(c(CI_Topt$lowerCI_Topt,CI_Topt$lowerCI_Topt), -1e6, c(CI_Topt$upperCI_Topt,CI_Topt$upperCI_Topt), 1e6, col='lightgrey', border=NA))
+lines(temperature, CI_A$upperCI_A*exp(-(temperature-MLE$Topt)^2/(2*MLE$w^2)), type = "l", 
+      ylim = c(0,max(data$Zoospores)), col = "darkgreen", lty = "dashed")
+lines(temperature, MLE$A*exp(-(temperature-MLE$Topt)^2/(2*MLE$w^2)), type = "l", 
+      ylim = c(0,max(data$Zoospores)), col = "red")
+points(data$Temperature,data$Zoospores)
+legend(0, 12000, legend = c("TPC", "Max Zoospore CI"), fill = c("red","darkgreen"))
+```
+
+
+# Mathimatical Model 
+
+The next step is to create a stage-structured SIR model including differential equations for zoospores, susceptible and infected tadpoles, and susceptible and infected frogs. 
+
+**Zoospores**
+$$\frac{d Z}{d t} = -d_z Z + p_f I_f Z + p_t I_t Z$$ 
+
+**Susceptible/Infected Tadpoles**
+$$\frac{d S_t}{d t} = b (S_f + I_f) - \beta_t S_t I_t - \beta_f S_t I_f - \beta_z S_t Z - m_S S_t - d_{St} S_t + r_t I_t$$
+
+$$\frac{d I_t}{d t} = \beta_t S_t I_t + \beta_f S_t I_f + \beta_z S_t Z - d_{It} I_t - v_t I_t - m_I I_t - r_t I_t$$
+
+**Susceptible/Infected Frogs**
+$$\frac{d S_f}{d t} = m_S S_t - \beta_t S_f I_t - \beta_f S_f I_f - \beta_z S_f Z - d_{Sf} S_f + r_f I_f$$
+
+$$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f Z - d_{If} I_f - v_f I_f - r_f I_f$$
+
+**List of Variables**
+- Z = number of zoospores
+- $S_t$ = number of susceptible tadpoles
+- $I_t$ = number of infected tadpoles 
+- $S_f$ = number of susceptible frogs
+- $I_f$ = number of infected frogs
+- $p_f$ = production rate of zoospores from infected frogs
+- $p_t$ = production rate of zoospores from infected tadpoles
+- $m_S$ = maturation rate of susceptible tadpoles
+- $m_I$ = maturation rate of infected tadpoles
+- b = birth rate of tadpoles
+- $r_t$ = recovery rate of tadpoles
+- $r_f$ = recovery rate of frogs
+- $v_t$ = virulence in tadpoles (death rate caused by the disease)
+- $v_f$ = virulence in frogs (death rate caused by the disease)
+- $\beta_f$ = rate of infection from frogs
+- $\beta_t$ = rate of infection from tadpoles
+- $\beta_z$ = rate of infection from environmental zoospores 
+- $d_z$ = death rate of zoospores 
+- $d_{St}$ = death rate of susceptible tadpoles
+- $d_{It}$ = death rate of infected tadpoles 
+- $d_{Sf}$ = death rate of susceptible frogs
+- $d_{If}$ = death rate of infected frogs 
+
+
+# Population Simulations 
+
+Using a stochastic version of our models, we can now simulate possible survival outcomes for an infected frog population at a given temperature. To do this, first we will make each possible event that can occur within our mathematical models into a vector and then make a list of all these vectors.
+
+Each vector indicates how that event affects each equation with 1 adding to the corresponding equation, -1 removing from the corresponding equation, and 0 having no effect on the corresponding equation. The position of each value in the vector thus correlates to one of the equations the order of which is c("Z", "St", "It", "Sf", "If"). 
+
+```{r}
+# List of every event and their corresponding vector 
+matrix_transitions <- list(zoospore_death = c(-1, 0, 0, 0, 0),
+                           zoospore_production_from_infected_tadpole = c(1, 0, 0, 0, 0),
+                           zoospore_production_from_infected_frog = c(1, 0, 0, 0, 0),
+                           birth_susceptible_tadpole = c(0, 1, 0, 0, 0),
+                           infection_susceptible_tadpole_by_infected_tadpole = c(0, -1, 1, 0, 0),
+                           infection_susceptible_tadpole_by_infected_frog = c(0, -1, 1, 0, 0),
+                           infection_susceptible_tadpole_by_zoospore = c(0, -1, 1, 0, 0), 
+                           infection_susceptible_frog_by_infected_tadpole = c(0, 0, 0, -1, 1),
+                           infection_susceptible_frog_by_infected_frog = c(0, 0, 0, -1, 1),
+                           infection_susceptible_frog_by_infected_zoospore = c(0, 0, 0, -1, 1),
+                           maturation_susceptible_tadpole = c(0, -1, 0, 1, 0),
+                           maturation_infected_tadpole = c(0, 0, -1, 0, 1),
+                           disease_induced_mortality_infected_tadpole = c(0, 0, -1, 0, 0),
+                           disease_induced_mortality_infected_frog = c(0, 0, 0, 0, -1),
+                           disease_independent_mortality_infected_tadpole = c(0, 0, -1, 0, 0),
+                           disease_indepdent_mortality_infected_frog = c(0, 0, 0, 0, -1),
+                           disease_indepdent_mortality_susceptible_tadpole = c(0, -1, 0, 0, 0),
+                           disease_indepdent_mortality_susceptible_frog = c(0, 0, 0, -1, 0),
+                           recovery_infected_tadpole = c(0, 1, -1, 0, 0),
+                           recovery_infected_frog = c(0, 0, 0, 1, -1)
+                           )
+
+matrix_transitions <- do.call(rbind, matrix_transitions)  
+rownames(matrix_transitions) <- NULL
+# We can name each column according to the equation that is affected
+colnames(matrix_transitions) <- c("Z", "St", "It", "Sf", "If")
+```
+
+Next, we will define the initial conditions and the parameter values we will be using in our simulation both of which will be put into their own respective vector (initial conditions = `system_state`, parameter values = `params`).
+
+The simulation will start with 100 susceptible tadpoles and later on we can make the initial number of zoospores be based on the TPC or in other words be a negative binomial draw around the TPC. We will also chose values for the parameter some of which are based on empirical data while others are just estimates. What each variable represents is listed above in the mathematical model section. 
+
+```{r}
+# Setting the initial state of the system 
+system_state <- data.frame(Z = 0, St = 100, It = 0, Sf = 0, If = 0) 
+rownames(system_state) <- NULL
+
+# Setting the rate values that will be used in the simulation
+params <- data.frame(dz = 2, 
+                     pt = 1e-3, pf = 1e-3, 
+                     b = 1/365,
+                     betat = 1e-3, betaf = 1e-3, betaz = 1e-3, 
+                     mS = 1/78, mI = 1/78, 
+                     vt = 1/21, vf = 1/21, 
+                     dIt = 1/365, dIf = 1/365, dSt = 1/365, dSf = 1/365,
+                     rt = 0, rf = 0
+                     )
+```
+
+These are just the parameters and initial conditions we chose but they can be changed in order to test different interaction. 
+
+
+We can now write a function that will compute every rate that occurs in our models based the initial conditions and parameters we give it. 
+
+```{r}
+# This function will return a vector of all the rates in our models 
+compute_rates <- function(state, params){
+  rates <- c(zoospore_death = params$dz*state$Z,
+             zoospore_production_from_infected_tadpole = params$pt*state$It*state$Z,
+             zoospore_production_from_infected_frog = params$pf*state$If*state$Z,
+             birth_susceptible_tadpole = params$b*(state$Sf+state$If), 
+             infection_susceptible_tadpole_by_infected_tadpole = params$betat*state$St*state$It,
+             infection_susceptible_tadpole_by_infected_frog = params$betaf*state$St*state$If,
+             infection_susceptible_tadpole_by_zoospore = params$betaz*state$St*state$Z,
+             infection_susceptible_frog_by_infected_tadpole = params$betat*state$Sf*state$It,
+             infection_susceptible_frog_by_infected_frog = params$betaf*state$Sf*state$If,
+             infection_susceptible_frog_by_infected_zoospore = params$betaz*state$Sf*state$Z,
+             maturation_susceptible_tadpole = params$mS*state$St,
+             maturation_infected_tadpole = params$mI*state$It,
+             disease_induced_mortality_infected_tadpole = params$vt*state$It,
+             disease_induced_mortality_infected_frog =  params$vf*state$If,
+             disease_independent_mortality_infected_tadpole =  params$dIt*state$It,
+             disease_indepdent_mortality_infected_frog =  params$dIf*state$If,
+             disease_indepdent_mortality_susceptible_tadpole = params$dSt*state$St,
+             disease_indepdent_mortality_susceptible_frog = params$dSf*state$Sf,
+             recovery_infected_tadpole = params$rt*state$It,
+             recovery_infected_frog = params$rf*state$If
+  )
+  
+  return(rates)
+}
+```
+
+Now we can write a function that simulates a frog population infected with Bd for 365 days (1 year) given the state of the system and parameters we defined above. This function will thus allow us to run a stochastic version of our model by selecting events to occur given their rate with some period of waiting between each selected event. 
+
+The time the simulation runs for can be altered but the simulation may take longer as a result. 
+
+```{r}
+i <- 1
+t <- 0
+
+# This function will simulate an infected frog population over one year
+simulator <- function(system = system_state, max_time = 365, parameters = params){
+  
+  while (t[i] < max_time){
+  
+# This terminates the simulation if the total population reaches zero before a year passes
+  if (sum(system[i,-1]) == 0){
+    break
+  }
+# Vector of rates when the system is in a particular state
+  rates <- compute_rates(system[i,], parameters)
+# Vector of waiting time between events
+  jump_time <- rexp(n = 1, rate = sum(rates))
+# Vector of randomly sampled event that were sampled based on the rate vector
+  event <- sample(x = 1:length(rates), size = 1, prob = as.numeric(rates/sum(rates)))
+# Vector of the system 
+  system <- rbind(system, system[i,] + matrix_transitions[event,])
+  rownames(system) <- NULL
+  
+  t[i+1] <- t[i] + jump_time
+  i <- i+1
+  
+  }
+  
+  return(cbind(system, time = t))
+  
+}
+```
+
+We can then incorporate the above function into a new function that will run the simulation at a specific temperature and for a given number of simulations. For each simulation, a random negative binomial draw around the TPC will be taken to determine the initial number of Bd zoospores in the system. The initial state of the system will then be updated before the above function is run and this process will be repeated for the specified amount of times. 
+
+```{r}
+# Again we will be looking at simulations that go for 365 days (1 year)
+max_time_to_use <- 365
+
+# This function runs the simulation with temperature determining the initial zoospore count
+simulate_for_specific_temp <- function(temp, nsims){
+  
+  sims <- NULL
+  
+  for (sim in 1:nsims){
+    
+    print(sim)
+
+# The initial zoospore count is a negative binomial draw around the TPC
+    Zinitial <- rnbinom(n = 1, size = MLE$size, 
+                        mu = MLE$A*exp(-(temp-MLE$Topt)^2/(2*MLE$w^2)))
+    
+# The state of the system is updated each simulation with a new initial zoospore draw 
+    system_state <- data.frame(Z = Zinitial, St = 100, It = 0, Sf = 0, If = 0)
+    rownames(system_state) <- NULL
+    
+    sims <- rbind(sims, cbind(simulator(system = system_state, 
+                                        max_time = max_time_to_use, 
+                                        parameters = params),
+                              replicate = sim,
+                              temperature = temp,
+                              Zinitial = Zinitial))
+  }
+  
+  return(sims)
+  
+}
+```
+
+Therefore, using the function above we can run the simulation 100 times at 10°C, 15°C, and 25°C. The results will then be put into a vector which can then be converted into its own csv file. 
+
+**WARNING**: Running this simulation can take a **very** long time 
+
+```{r}
+# This allows the number of simulations preformed to easily be altered 
+nsims_to_use <- 100
+
+results <- rbind(simulate_for_specific_temp(temp = 10, nsims = nsims_to_use),
+                 simulate_for_specific_temp(temp = 15, nsims = nsims_to_use),
+                 simulate_for_specific_temp(temp = 25, nsims = nsims_to_use)) 
+
+write_csv(as.data.frame(results), "results.csv")
+results <- read_csv("results.csv")
+```
+
+Even though we will be simulating infected populations at 3 temperatures, the simulation can be run using any temperature of your choice as well. Furthermore, even running the simulation at the same 3 temperatures again will provide slightly different results because the events that occur and the initial zoospore count are random draws. 
+
+## Our Simulation Resluts 
+
+Since rerunning the simulations at the same temperatures will give slightly different results we can analysis the data from a previous simulation by reading in the corresponding csv file. 
+
+```{r}
+# Bring in the previous results of the simulations 
+sims <- read_csv("simulation_results.csv")
+```
+
+We can visualize these simulations by graphing the population size over time. Then, to better visualize the relationship between infected and susceptible individuals, we can make separate lines for the total and infected population.
+
+```{r}
+nsims_to_use <- 100
+
+# INSERT CODE FOR THE GRAPH IN FIGURE 2 
+# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+```
+
+### Analysis of Simulation Results 
+
+To analyse the results of our simulations we will look at:
+
+1. The distribution of frog population sizes after 1 year
+
+```{r}
+# INSERT CODE FOR THE GRAPH IN FIGURE 3 
+# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+```
+
+2. The relationship between the initial number of zoospores and the final population size
+
+```{r}
+# INSERT CODE FOR THE GRAPH IN FIGURE 4 
+# (should look exactly the same as what we have in the report but include the title we had in the presentation again too)
+```
+
+3. The fraction of populations that went extinct after 1 year
+
+```{r}
+sims %>%  
+  group_by(replicate,temperature) %>% 
+  subset(St+It+Sf+If == 0) %>% 
+  ungroup(replicate) %>%  
+  summarise(frac_extinction = n()/nsims_to_use)
+```
+
+4. The fraction of populations that fell below 50% of their initial population size at least once over the 1 year period. 
+
+```{r}
+sims %>%  
+  group_by(replicate, temperature) %>% 
+  subset(St+It+Sf+If < 50) %>% 
+  mutate(min_time_below_50 = min(time)) %>% 
+  subset(time == min_time_below_50) %>% 
+  ungroup(replicate) %>%  
+  summarise(frac_below_50 = n()/nsims_to_use)
+```
