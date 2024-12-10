@@ -18,7 +18,7 @@ data <- read.csv("combined_chytrid_data.csv")
 head(data)
 ```
 
-This dataset was manually constructed and includes the temperature (°C) and Bd zoospore count data from 3 different studies. Using this data, we can construct a TPC for Bd zoospores.
+This dataset was manually constructed and includes the temperature (°C) and Bd zoospore count data from 3 different studies. Using this data, we can build a TPC for Bd zoospores.
 
 ## Visualizing the Data
 
@@ -39,7 +39,7 @@ hist(data$Zoospores, main = "Distribution of Zoospore Count",
      xlab = "Number of Zoospores")
 ```
 
-Even though Normal or t-distributed errors are often assumed when fitting TPCs, since our zoospore count data is quite variable we can use a negative binomial distribution to account for our over dispersion around the mean. 
+Even though Normal or t-distributed errors are often assumed when fitting TPCs since our zoospore count data is quite variable, we can use a negative binomial distribution to account for our overdispersion around the mean. 
 
 ## Finding Bd's Thermal Optimum
 
@@ -52,7 +52,7 @@ With our distribution chosen, we can create an equation for the TPC which would 
 We want to find the value of each parameter that is most likely to give rise to our data thus we can create a function that evaluates the log-likelihood of our data given specific values for each parameter. 
 
 ```{r}
-# This function will evaluating the log-likelihood of all observations in our dataset
+# This function will evaluate the log-likelihood of all observations in our dataset
 LL_eval <- function(data, A, Topt, w, size){
   
   mean <- round(A*exp(-(data$Temperature-Topt)^2/(2*w^2)))
@@ -65,7 +65,7 @@ LL_eval <- function(data, A, Topt, w, size){
 LL_eval(data, A = 10, Topt = 15, w = 1, size = 1)
 ```
 
-In order to determine the value of each parameter that is the mostly likely to give rise to our data, we can create a dataframe that consists of a range of values for each parameter and all possible combinations of those values. 
+To determine the value of each parameter that is most likely to give rise to our data, we can create a dataframe consisting of a range of values for each parameter and all possible combinations of those values. 
 
 ```{r}
 # Parameters to test 
@@ -93,7 +93,7 @@ LL <- as.data.frame(do.call(rbind, LL))
 colnames(LL) <- c("LL")
 ```
 
-Now we can combine these log-likelihood values with the `combinations` dataframe to determine which combination of parameters has the highest log-likelihood value. Therefore, we will be finding the maximum likelihood estimate of the parameters. 
+Now we can combine these log-likelihood values with the `combinations` dataframe to determine which combination of parameters has the highest log-likelihood value. Therefore, we can find the maximum likelihood estimate of the parameters. 
 
 ```{r}
 # This vector provides the maximum likelihood estimate of each parameter
@@ -105,7 +105,7 @@ As a result, the Topt that best describes our data is 15. Therefore, given this 
 
 ### Extra Analysis 
 
-We can also do some extra analysis in regards to the TPC including:
+We can also do some extra analysis in regard to the TPC including:
 
 1. Finding the confidence interval for each parameter
 
@@ -251,7 +251,7 @@ $$\frac{d I_f}{d t} = m_I I_t + \beta_t S_f I_t + \beta_f S_f I_f + \beta_z S_f 
 
 # Population Simulations 
 
-Using a stochastic version of our models, we can now simulate possible survival outcomes for an infected frog population at a given temperature. To do this, first we will make each possible event that can occur within our mathematical models into a vector and then make a list of all these vectors.
+Using a stochastic version of our models, we can simulate possible survival outcomes for an infected frog population at a given temperature. To do this, first, we will make each possible event in our mathematical models into a vector and then make a list of all these vectors.
 
 Each vector indicates how that event affects each equation with 1 adding to the corresponding equation, -1 removing from the corresponding equation, and 0 having no effect on the corresponding equation. The position of each value in the vector thus correlates to one of the equations the order of which is c("Z", "St", "It", "Sf", "If"). 
 
@@ -285,9 +285,9 @@ rownames(matrix_transitions) <- NULL
 colnames(matrix_transitions) <- c("Z", "St", "It", "Sf", "If")
 ```
 
-Next, we will define the initial conditions and the parameter values we will be using in our simulation both of which will be put into their own respective vector (initial conditions = `system_state`, parameter values = `params`).
+Next, we will define the initial conditions and parameter values we will use in our simulation. These values will then be put into their own vector (initial conditions = `system_state`, parameter values = `params`).
 
-The simulation will start with 100 susceptible tadpoles and later on we can make the initial number of zoospores be based on the TPC or in other words be a negative binomial draw around the TPC. We will also chose values for the parameter some of which are based on empirical data while others are just estimates. What each variable represents is listed above in the mathematical model section. 
+The simulation will start with 100 susceptible tadpoles and later on, we can base the initial number of zoospores on the TPC. We will also choose values for the parameter some of which are based on empirical data while others are just estimates. What each variable represents is listed above in the mathematical model section. 
 
 ```{r}
 # Setting the initial state of the system 
@@ -306,10 +306,10 @@ params <- data.frame(dz = 2,
                      )
 ```
 
-These are just the parameters and initial conditions we chose but they can be changed in order to test different interaction. 
+These are just the parameters and initial conditions we chose but these values can be changed to test different interactions. 
 
 
-We can now write a function that will compute every rate that occurs in our models based the initial conditions and parameters we give it. 
+We can now write a function that will compute all the rates in our models given the initial conditions and parameters we provide. 
 
 ```{r}
 # This function will return a vector of all the rates in our models 
@@ -340,7 +340,7 @@ compute_rates <- function(state, params){
 }
 ```
 
-Now we can write a function that simulates a frog population infected with Bd for 365 days (1 year) given the state of the system and parameters we defined above. This function will thus allow us to run a stochastic version of our model by selecting events to occur given their rate with some period of waiting between each selected event. 
+Now we can write a function that simulates a frog population infected with Bd for 365 days (1 year) based on the system state and parameters we defined above. This function will allow us to run a stochastic version of our model by selecting events to occur given their rate and between each selected event there is some waiting time. 
 
 The time the simulation runs for can be altered but the simulation may take longer as a result. 
 
@@ -377,7 +377,7 @@ simulator <- function(system = system_state, max_time = 365, parameters = params
 }
 ```
 
-We can then incorporate the above function into a new function that will run the simulation at a specific temperature and for a given number of simulations. For each simulation, a random negative binomial draw around the TPC will be taken to determine the initial number of Bd zoospores in the system. The initial state of the system will then be updated before the above function is run and this process will be repeated for the specified amount of times. 
+We can then incorporate the above function into a new function that will run the simulation at a specific temperature and for a given number of simulations. For each simulation, a random negative binomial draw around the TPC will be taken to determine the initial number of Bd zoospores. The initial state of the system will then be updated before the above function (`simulator`) is run and this process will be repeated for the specified number of times. 
 
 ```{r}
 # Again we will be looking at simulations that go for 365 days (1 year)
@@ -418,7 +418,7 @@ Therefore, using the function above we can run the simulation 100 times at 10°C
 **WARNING**: Running this simulation can take a **very** long time 
 
 ```{r}
-# This allows the number of simulations preformed to easily be altered 
+# This allows the number of simulations that are performed to easily be altered 
 nsims_to_use <- 100
 
 results <- rbind(simulate_for_specific_temp(temp = 10, nsims = nsims_to_use),
@@ -429,24 +429,23 @@ write_csv(as.data.frame(results), "results.csv")
 results <- read_csv("results.csv")
 ```
 
-Even though we will be simulating infected populations at 3 temperatures, the simulation can be run using any temperature of your choice as well. Furthermore, even running the simulation at the same 3 temperatures again will provide slightly different results because the events that occur and the initial zoospore count are random draws. 
+Even though we will be simulating infected populations at 3 temperatures, the simulation can be run at any temperature. Furthermore, even running the simulation at the same 3 temperatures again will provide slightly different results because the events that occur and the initial zoospore count are random draws. 
 
 ## Our Simulation Resluts 
 
-Since rerunning the simulations at the same temperatures will give slightly different results we can analysis the data from a previous simulation by reading in the corresponding csv file. 
+Since rerunning the simulations at the same temperatures will give slightly different results we will analyze the data from a previous simulation by reading in the corresponding csv file. 
 
 ```{r}
 # Bring in the previous results of the simulations 
 sims <- read_csv("simulation_results.csv")
 ```
 
-We can visualize these simulations by graphing the population size over time. Then, to better visualize the relationship between infected and susceptible individuals, we can make separate lines for the total and infected population.
+We can visualize these simulations by graphing the population size over time. Then to better visualize the relationship between infected and susceptible individuals, we can make separate lines for the total and infected population.
 
 ```{r}
 nsims_to_use <- 100
 
-
-sims |>
+sims %>% 
   ggplot(aes(x = time, group = replicate)) + 
   geom_step(aes(y = St + It + Sf + If, color = "Total population")) + 
   geom_line(aes(y = It + If, color = "Infected population"), alpha = 0.25) +
@@ -464,15 +463,15 @@ sims |>
 
 ### Analysis of Simulation Results 
 
-To analyse the results of our simulations we will look at:
+To analyze the results of our simulations we will look at:
 
 1. The distribution of frog population sizes after 1 year
 
 ```{r}
-sims |>
-  group_by(replicate, temperature) |>
-  mutate(max_time = case_when(time == max(time) ~ time)) |>
-  subset(time == max_time) |>
+sims %>% 
+  group_by(replicate, temperature) %>% 
+  mutate(max_time = case_when(time == max(time) ~ time)) %>% 
+  subset(time == max_time) %>% 
   ggplot(aes(x = St+It+Sf+If)) + 
   geom_histogram(aes(y = ..count..)) + 
   facet_wrap(~temperature) +
@@ -485,10 +484,10 @@ sims |>
 2. The relationship between the initial number of zoospores and the final population size
 
 ```{r}
-sims |>
-  group_by(replicate, temperature) |>
-  mutate(max_time = case_when(time == max(time) ~ time)) |>
-  subset(time == max_time) |>
+sims %>% 
+  group_by(replicate, temperature) %>% 
+  mutate(max_time = case_when(time == max(time) ~ time)) %>% 
+  subset(time == max_time) %>% 
   ggplot(aes(x = Zinitial, y = St+It+Sf+If)) + 
   geom_point() + 
   facet_wrap(~temperature, scales = "free") +
@@ -509,7 +508,7 @@ sims %>%
   summarise(frac_extinction = n()/nsims_to_use)
 ```
 
-4. The fraction of populations that fell below 50% of their initial population size at least once over the 1 year period. 
+4. The fraction of populations that fell below 50% of their initial population size at least once over the 1 year. 
 
 ```{r}
 sims %>%  
